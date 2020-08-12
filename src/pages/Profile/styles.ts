@@ -29,7 +29,7 @@ export const Content = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin: -10px auto 0;
+  margin: -174px auto 0;
 
   form {
     margin: 80px 0;

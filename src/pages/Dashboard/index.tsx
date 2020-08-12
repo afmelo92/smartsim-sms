@@ -56,8 +56,7 @@ const Dashboard: React.FC = () => {
 
         const response = await SMSDevApi.get('send', {
           params: {
-            key:
-              'VBUQONYM9022I25YHBVBUUJ8GBW6638LS5UY8XKY8JXVNC9209EMYLCBMQWUR7715W0QZPWPVT7I6TBHKAS4PLXEVRSZ4S0DGXMN16RV2L44FNT70PZHS4G0NSQ4HW3B',
+            key: `${user.sms_key}`,
             type: 9,
             number: phone,
             msg: message,
@@ -96,7 +95,7 @@ const Dashboard: React.FC = () => {
         }
       }
     },
-    [addToast],
+    [addToast, user.sms_key],
   );
 
   return (
@@ -108,8 +107,9 @@ const Dashboard: React.FC = () => {
           <Profile>
             <img
               src={
-                user.avatar_url ||
-                'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTOcCR9Qg_yFyOD4CA6ITWOGJM02y9JqwwLLA&usqp=CAU'
+                user.avatar_url
+                  ? user.avatar_url
+                  : 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcTOcCR9Qg_yFyOD4CA6ITWOGJM02y9JqwwLLA&usqp=CAU'
               }
               alt={user.name}
             />

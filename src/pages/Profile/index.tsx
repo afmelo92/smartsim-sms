@@ -78,7 +78,7 @@ const Profile: React.FC = () => {
             : {}),
         };
 
-        const response = await SSApi.put('/profile', formData);
+        const response = await SSApi.put('/user-profile', formData);
 
         updateUser(response.data);
 
