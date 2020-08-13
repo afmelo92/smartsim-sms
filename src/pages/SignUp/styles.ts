@@ -15,7 +15,7 @@ export const Content = styled.div`
   width: 100%;
 `;
 
-const appearFromLeft = keyframes`
+const appearFromTop = keyframes`
   from {
     opacity: 0;
     transform: translateY(-50px);
@@ -32,7 +32,7 @@ export const AnimationContainer = styled.div`
   align-items: center;
   justify-content: center;
 
-  animation: ${appearFromLeft} 1.5s;
+  animation: ${appearFromTop} 1.5s;
 
   form {
     margin: 80px 0;

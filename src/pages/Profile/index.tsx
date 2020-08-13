@@ -1,9 +1,10 @@
-import React, { useCallback, useRef, ChangeEvent } from 'react';
+import React, { useCallback, useRef, ChangeEvent, useState } from 'react';
 import { FiMail, FiUser, FiLock, FiCamera, FiArrowLeft } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import { useHistory, Link } from 'react-router-dom';
+import { FaSpinner } from 'react-icons/fa';
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import SSApi from '../../services/api/smartsim.api';
@@ -25,6 +26,9 @@ interface ProfileFormData {
 
 const Profile: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+
+  const [loading, setLoading] = useState(false);
+
   const { addToast } = useToast();
   const history = useHistory();
   const { user, updateUser } = useAuth();
@@ -32,6 +36,8 @@ const Profile: React.FC = () => {
   const handleSubmit = useCallback(
     async (data: ProfileFormData) => {
       try {
+        setLoading(true);
+
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
@@ -81,6 +87,8 @@ const Profile: React.FC = () => {
         const response = await SSApi.put('/user-profile', formData);
 
         updateUser(response.data);
+
+        setLoading(false);
 
         history.push('/dashboard');
 
@@ -188,7 +196,9 @@ const Profile: React.FC = () => {
             placeholder="Confirme nova senha"
           />
 
-          <Button type="submit">Confirmar Mudanças</Button>
+          <Button loading={loading} icon={FaSpinner} type="submit">
+            Confirmar Mudanças
+          </Button>
         </Form>
       </Content>
     </Container>

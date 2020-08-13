@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
-import { FaSimCard } from 'react-icons/fa';
+import { FaSimCard, FaSpinner } from 'react-icons/fa';
 import { FiMessageSquare, FiPower } from 'react-icons/fi';
 import * as Yup from 'yup';
 
@@ -33,6 +33,7 @@ const Dashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { user, signOut } = useAuth();
   const [credits, setCredits] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   const { addToast } = useToast();
 
@@ -53,6 +54,8 @@ const Dashboard: React.FC = () => {
   const handleSubmit = useCallback(
     async (data: SMSFormData) => {
       try {
+        setLoading(true);
+
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
@@ -78,7 +81,6 @@ const Dashboard: React.FC = () => {
           },
         });
 
-        console.log(response.data);
         const { codigo } = response.data;
 
         if (codigo === '403') {
@@ -110,6 +112,7 @@ const Dashboard: React.FC = () => {
         });
 
         loadCredits();
+        setLoading(false);
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -182,7 +185,9 @@ const Dashboard: React.FC = () => {
               icon={FiMessageSquare}
               placeholder="Mensagem"
             />
-            <Button type="submit">Enviar</Button>
+            <Button loading={loading} icon={FaSpinner} type="submit">
+              Enviar
+            </Button>
           </Form>
         </AnimationContainer>
       </Content>
