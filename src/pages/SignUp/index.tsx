@@ -1,7 +1,7 @@
 import React, { useRef, useCallback } from 'react';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiMail, FiLock, FiUser, FiArrowLeft } from 'react-icons/fi';
 import * as Yup from 'yup';
 
@@ -11,6 +11,8 @@ import { Container, Content, AnimationContainer, Background } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import SSApi from '../../services/api/smartsim.api';
+import { useToast } from '../../hooks/toast';
 
 interface SignUpFormData {
   name: string;
@@ -20,6 +22,9 @@ interface SignUpFormData {
 
 const SignUp: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+
+  const { addToast } = useToast();
+  const history = useHistory();
 
   const handleSubmit = useCallback(async (data: SignUpFormData) => {
     try {
@@ -37,15 +42,15 @@ const SignUp: React.FC = () => {
         abortEarly: false,
       });
 
-      // await api.post('/users', data);
+      await SSApi.post('/users', data);
 
-      // history.push('/');
+      history.push('/');
 
-      // addToast({
-      //   type: 'success',
-      //   title: 'Cadastro realizado!',
-      //   description: 'Você já pode fazer seu logon no GoBarber',
-      // });
+      addToast({
+        type: 'success',
+        title: 'Cadastro realizado!',
+        description: 'Você já pode fazer seu logon no GoBarber',
+      });
 
       console.log(data);
     } catch (err) {
@@ -55,11 +60,11 @@ const SignUp: React.FC = () => {
         formRef.current?.setErrors(errors);
       }
 
-      // addToast({
-      //   type: 'error',
-      //   title: 'Erro no cadastro',
-      //   description: 'Ocorreu um erro ao fazer seu cadasto, tente novamente',
-      // });
+      addToast({
+        type: 'error',
+        title: 'Erro no cadastro',
+        description: 'Ocorreu um erro ao fazer seu cadasto, tente novamente',
+      });
     }
   }, []);
 

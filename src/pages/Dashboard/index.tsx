@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { Form } from '@unform/web';
 import { FormHandles } from '@unform/core';
 import { FaSimCard } from 'react-icons/fa';
@@ -32,8 +32,23 @@ interface SMSFormData {
 const Dashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
   const { user, signOut } = useAuth();
+  const [credits, setCredits] = useState(0);
 
   const { addToast } = useToast();
+
+  async function loadCredits(): Promise<void> {
+    const response = await SMSDevApi.get('balance', {
+      params: {
+        key: `${user.sms_key}`,
+      },
+    });
+
+    setCredits(response.data.saldo_sms);
+  }
+
+  useEffect(() => {
+    loadCredits();
+  }, []);
 
   const handleSubmit = useCallback(
     async (data: SMSFormData) => {
@@ -63,13 +78,26 @@ const Dashboard: React.FC = () => {
           },
         });
 
+        console.log(response.data);
         const { codigo } = response.data;
+
+        if (codigo === '403') {
+          addToast({
+            type: 'error',
+            title: 'Erro no envio',
+            description:
+              'Você precisa abrir uma conta conosco para começar a enviar. Entre em contato conosco assim que possível.',
+          });
+
+          throw new Error('Saldo insuficiente');
+        }
+
         if (codigo === '408') {
           addToast({
             type: 'error',
             title: 'Erro no envio',
             description:
-              'Saldo insuficiente. Efetue uma recarga de créditos assim que possível',
+              'Saldo insuficiente. Efetue uma recarga de créditos assim que possível.',
           });
 
           throw new Error('Saldo insuficiente');
@@ -78,8 +106,10 @@ const Dashboard: React.FC = () => {
         addToast({
           type: 'success',
           title: 'Mensagem enviada!',
-          description: 'Verifique se o dispositivo recebeu a mensagem',
+          description: 'Verifique se o dispositivo recebeu a mensagem.',
         });
+
+        loadCredits();
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -90,7 +120,7 @@ const Dashboard: React.FC = () => {
             type: 'error',
             title: 'Erro no envio',
             description:
-              'Ocorreu um erro ao enviar sua mensagem, cheque os campos',
+              'Ocorreu um erro ao enviar sua mensagem, cheque os campos.',
           });
         }
       }
@@ -124,7 +154,11 @@ const Dashboard: React.FC = () => {
             <div>
               <strong>Créditos</strong>
               <Link to="/profile">
-                <strong>Você tem 23 créditos</strong>
+                <strong>
+                  Você tem
+                  {` ${credits || '0'} `}
+                  créditos
+                </strong>
               </Link>
             </div>
           </Profile>
