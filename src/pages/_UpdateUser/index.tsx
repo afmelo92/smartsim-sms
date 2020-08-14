@@ -8,12 +8,12 @@ import { Link, useHistory } from 'react-router-dom';
 import { FaSpinner } from 'react-icons/fa';
 import { useToast } from '../../hooks/toast';
 import getValidationErrors from '../../utils/getValidationErrors';
+import SSApi from '../../services/api/smartsim.api';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import { Container, Content, AnimationContainer, Background } from './styles';
-import SSApi from '../../services/api/smartsim.api';
 
 interface SMSKeyUpdateFormData {
   email: string;

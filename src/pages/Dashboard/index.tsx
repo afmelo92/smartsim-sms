@@ -6,6 +6,7 @@ import { FiMessageSquare, FiPower } from 'react-icons/fi';
 import * as Yup from 'yup';
 
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
 import getValidationErrors from '../../utils/getValidationErrors';
 import SMSDevApi from '../../services/api/sms.api';
@@ -22,7 +23,6 @@ import {
   HeaderContent,
   Profile,
 } from './styles';
-import { useAuth } from '../../hooks/auth';
 
 interface SMSFormData {
   phone: string;
@@ -161,7 +161,7 @@ const Dashboard: React.FC = () => {
             <div>
               <span>Créditos</span>
               {credits ? (
-                <Link to="/credits">
+                <Link to="/">
                   <strong>
                     Você tem
                     {` ${credits || '0'} `}

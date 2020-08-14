@@ -5,8 +5,9 @@ import { Form } from '@unform/web';
 import * as Yup from 'yup';
 import { useHistory, Link } from 'react-router-dom';
 import { FaSpinner } from 'react-icons/fa';
-import getValidationErrors from '../../utils/getValidationErrors';
 
+import { useAuth } from '../../hooks/auth';
+import getValidationErrors from '../../utils/getValidationErrors';
 import SSApi from '../../services/api/smartsim.api';
 import { useToast } from '../../hooks/toast';
 
@@ -14,7 +15,6 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import { Container, Content, AvatarInput } from './styles';
-import { useAuth } from '../../hooks/auth';
 
 interface ProfileFormData {
   name: string;

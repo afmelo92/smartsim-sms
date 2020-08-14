@@ -7,13 +7,13 @@ import * as Yup from 'yup';
 
 import { FaSpinner } from 'react-icons/fa';
 import getValidationErrors from '../../utils/getValidationErrors';
+import SSApi from '../../services/api/smartsim.api';
+import { useToast } from '../../hooks/toast';
 
 import { Container, Content, AnimationContainer, Background } from './styles';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import SSApi from '../../services/api/smartsim.api';
-import { useToast } from '../../hooks/toast';
 
 interface SignUpFormData {
   name: string;

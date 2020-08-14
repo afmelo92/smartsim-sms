@@ -56,14 +56,14 @@ const ResetPassword: React.FC = () => {
           token,
         });
 
+        history.push('/');
+
         addToast({
           type: 'success',
           title: 'Senha alterada',
           description:
             'Sua senha foi alterada. Efetue um login com suas novas credenciais',
         });
-
-        history.push('/');
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
