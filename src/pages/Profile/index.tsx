@@ -30,8 +30,8 @@ const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { addToast } = useToast();
-  const history = useHistory();
   const { user, updateUser } = useAuth();
+  const history = useHistory();
 
   const handleSubmit = useCallback(
     async (data: ProfileFormData) => {
@@ -99,7 +99,7 @@ const Profile: React.FC = () => {
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
-
+          setLoading(false);
           formRef.current?.setErrors(errors);
 
           return;
@@ -111,6 +111,8 @@ const Profile: React.FC = () => {
           description:
             'Ocorreu um erro ao atualizar seu perfil, tente novamente',
         });
+      } finally {
+        setLoading(false);
       }
     },
     [addToast, history, updateUser],

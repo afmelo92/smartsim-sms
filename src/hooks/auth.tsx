@@ -7,13 +7,12 @@ interface User {
   avatar_url: string;
   email: string;
   sms_key: string;
-  admin?: boolean;
 }
 
 interface AuthState {
   token: string;
   user: User;
-  admin?: boolean;
+  admin?: string;
 }
 
 interface SignInCredentials {
@@ -23,6 +22,7 @@ interface SignInCredentials {
 
 interface AuthContextData {
   user: User;
+  admin?: string;
   signIn(credentials: SignInCredentials): Promise<void>;
   signOut(): void;
   updateUser(user: User): void;
@@ -39,14 +39,18 @@ export const AuthProvider: React.FC = ({ children }) => {
     if (token && user) {
       SSApi.defaults.headers.authorization = `Bearer ${token}`;
 
+      if (admin) {
+        return { token, user: JSON.parse(user), admin };
+      }
+
       return { token, user: JSON.parse(user) };
     }
 
-    if (token && user && admin) {
-      SSApi.defaults.headers.authorization = `Bearer ${token}`;
+    // if (token && user && admin) {
+    //   SSApi.defaults.headers.authorization = `Bearer ${token}`;
 
-      return { token, user: JSON.parse(user), admin: true };
-    }
+    //   return { token, user: JSON.parse(user), admin };
+    // }
 
     return {} as AuthState;
   });
@@ -62,20 +66,19 @@ export const AuthProvider: React.FC = ({ children }) => {
     localStorage.setItem('@smartsim:token', token);
     localStorage.setItem('@smartsim:user', JSON.stringify(user));
 
-    SSApi.defaults.headers.authorization = `Bearer ${token}`;
-
     if (admin) {
-      localStorage.setItem('@smartsim:admin', admin);
-      setData({ token, user, admin });
-      return;
+      localStorage.setItem('@smartsim:admin', JSON.stringify(admin));
     }
 
-    setData({ token, user });
+    SSApi.defaults.headers.authorization = `Bearer ${token}`;
+
+    setData({ token, user, admin });
   }, []);
 
   const signOut = useCallback(() => {
     localStorage.removeItem('@smartsim:token');
     localStorage.removeItem('@smartsim:user');
+    localStorage.removeItem('@smartsim:admin');
 
     setData({} as AuthState);
   }, []);
@@ -87,14 +90,21 @@ export const AuthProvider: React.FC = ({ children }) => {
       setData({
         token: data.token,
         user,
+        admin: data.admin,
       });
     },
-    [setData, data.token],
+    [setData, data.token, data.admin],
   );
 
   return (
     <AuthContext.Provider
-      value={{ user: data.user, signIn, signOut, updateUser }}
+      value={{
+        user: data.user,
+        admin: data.admin,
+        signIn,
+        signOut,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

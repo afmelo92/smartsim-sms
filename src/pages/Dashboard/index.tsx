@@ -31,7 +31,7 @@ interface SMSFormData {
 
 const Dashboard: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
-  const { user, signOut } = useAuth();
+  const { admin, user, signOut } = useAuth();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -128,6 +128,8 @@ const Dashboard: React.FC = () => {
               'Ocorreu um erro ao enviar sua mensagem, cheque os campos.',
           });
         }
+      } finally {
+        setLoading(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,14 +174,14 @@ const Dashboard: React.FC = () => {
                 <a
                   href="https://web.whatsapp.com/send?phone=+5511950802746&text=Ola!%20%20Gostaria%20de%20adquirir%20creditos%20para%20SMS"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   <strong>Adquira créditos agora!</strong>
                 </a>
               )}
             </div>
           </Profile>
-          {user.admin ? (
+          {admin ? (
             <Profile>
               <div>
                 <span>Admin</span>

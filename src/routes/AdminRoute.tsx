@@ -18,13 +18,13 @@ const AdminRoute: React.FC<RouteProps> = ({
   component: Component,
   ...rest
 }) => {
-  const { user } = useAuth();
+  const { admin } = useAuth();
 
   return (
     <ReactDOMRoute
       {...rest}
       render={({ location }) => {
-        return isAdmin === !!user.admin ? (
+        return isAdmin === !!admin ? (
           <Component />
         ) : (
           <Redirect

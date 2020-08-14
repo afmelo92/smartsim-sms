@@ -53,8 +53,6 @@ const _UpdateUser: React.FC = () => {
           sms_key,
         });
 
-        setLoading(false);
-
         history.push('/dashboard');
 
         addToast({
@@ -62,6 +60,8 @@ const _UpdateUser: React.FC = () => {
           title: 'Perfil do cliente atualizado!',
           description: 'O cliente já pode começar a enviar mensagens.',
         });
+
+        setLoading(false);
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -77,6 +77,8 @@ const _UpdateUser: React.FC = () => {
           description:
             'Ocorreu um erro ao atualizar seu perfil, tente novamente',
         });
+      } finally {
+        setLoading(false);
       }
     },
     [addToast, history],
