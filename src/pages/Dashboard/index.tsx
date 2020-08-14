@@ -49,6 +49,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     loadCredits();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSubmit = useCallback(
@@ -105,6 +106,8 @@ const Dashboard: React.FC = () => {
           throw new Error('Saldo insuficiente');
         }
 
+        setLoading(false);
+
         addToast({
           type: 'success',
           title: 'Mensagem enviada!',
@@ -112,7 +115,6 @@ const Dashboard: React.FC = () => {
         });
 
         loadCredits();
-        setLoading(false);
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
           const errors = getValidationErrors(err);
@@ -128,6 +130,7 @@ const Dashboard: React.FC = () => {
         }
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [addToast, user.sms_key],
   );
 
@@ -153,19 +156,41 @@ const Dashboard: React.FC = () => {
                 <strong>{user.name}</strong>
               </Link>
             </div>
-
+          </Profile>
+          <Profile>
             <div>
-              <strong>Créditos</strong>
-              <Link to="/profile">
-                <strong>
-                  Você tem
-                  {` ${credits || '0'} `}
-                  créditos
-                </strong>
-              </Link>
+              <span>Créditos</span>
+              {credits ? (
+                <Link to="/credits">
+                  <strong>
+                    Você tem
+                    {` ${credits || '0'} `}
+                    créditos
+                  </strong>
+                </Link>
+              ) : (
+                <a
+                  href="https://web.whatsapp.com/send?phone=+5511950802746&text=Ola!%20%20Gostaria%20de%20adquirir%20creditos%20para%20SMS"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <strong>Adquira créditos agora!</strong>
+                </a>
+              )}
             </div>
           </Profile>
-
+          {user.admin ? (
+            <Profile>
+              <div>
+                <span>Admin</span>
+                <Link to="/update-sms-key">
+                  <strong>Autorizar cliente</strong>
+                </Link>
+              </div>
+            </Profile>
+          ) : (
+            ''
+          )}
           <button type="button" onClick={signOut}>
             <FiPower />
           </button>

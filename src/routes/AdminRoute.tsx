@@ -13,8 +13,8 @@ interface RouteProps extends ReactDOMRouteProps {
   component: React.ComponentType;
 }
 
-const Route: React.FC<RouteProps> = ({
-  isPrivate = false,
+const AdminRoute: React.FC<RouteProps> = ({
+  isAdmin = false,
   component: Component,
   ...rest
 }) => {
@@ -24,12 +24,12 @@ const Route: React.FC<RouteProps> = ({
     <ReactDOMRoute
       {...rest}
       render={({ location }) => {
-        return isPrivate === !!user ? (
+        return isAdmin === !!user.admin ? (
           <Component />
         ) : (
           <Redirect
             to={{
-              pathname: isPrivate ? '/' : '/dashboard',
+              pathname: isAdmin ? '/' : '/dashboard',
               state: { from: location },
             }}
           />
@@ -39,4 +39,4 @@ const Route: React.FC<RouteProps> = ({
   );
 };
 
-export default Route;
+export default AdminRoute;

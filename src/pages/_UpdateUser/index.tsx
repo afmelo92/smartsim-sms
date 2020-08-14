@@ -1,12 +1,11 @@
-import React, { useRef, useCallback } from 'react';
-import { FiLogIn, FiMail, FiLock } from 'react-icons/fi';
+import React, { useRef, useCallback, useState } from 'react';
+import { FiMail, FiLock, FiArrowLeft } from 'react-icons/fi';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { FaSpinner } from 'react-icons/fa';
-import { useAuth } from '../../hooks/auth';
 import { useToast } from '../../hooks/toast';
 import getValidationErrors from '../../utils/getValidationErrors';
 
@@ -14,38 +13,54 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 import { Container, Content, AnimationContainer, Background } from './styles';
+import SSApi from '../../services/api/smartsim.api';
 
-interface SignInFormData {
+interface SMSKeyUpdateFormData {
   email: string;
-  password: string;
+  sms_key: string;
 }
 
-const SignIn: React.FC = () => {
+const _UpdateUser: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
+  const [loading, setLoading] = useState(false);
 
-  const { signIn } = useAuth();
+  const history = useHistory();
 
   const { addToast } = useToast();
 
   const handleSubmit = useCallback(
-    async (data: SignInFormData) => {
+    async (data: SMSKeyUpdateFormData) => {
       try {
+        setLoading(true);
+
         formRef.current?.setErrors({});
 
         const schema = Yup.object().shape({
           email: Yup.string()
             .required('E-mail obrigatório')
             .email('Digite um e-mail válido'),
-          password: Yup.string().required('Senha obrigatória'),
+          sms_key: Yup.string().required('SMS Key obrigatorio'),
         });
 
         await schema.validate(data, {
           abortEarly: false,
         });
 
-        await signIn({
-          email: data.email,
-          password: data.password,
+        const { email, sms_key } = data;
+
+        await SSApi.put('/users', {
+          email,
+          sms_key,
+        });
+
+        setLoading(false);
+
+        history.push('/dashboard');
+
+        addToast({
+          type: 'success',
+          title: 'Perfil do cliente atualizado!',
+          description: 'O cliente já pode começar a enviar mensagens.',
         });
       } catch (err) {
         if (err instanceof Yup.ValidationError) {
@@ -58,12 +73,13 @@ const SignIn: React.FC = () => {
 
         addToast({
           type: 'error',
-          title: 'Erro na autenticação',
-          description: 'Ocorreu um erro ao fazer login, cheque as credenciais',
+          title: 'Erro na atualização',
+          description:
+            'Ocorreu um erro ao atualizar seu perfil, tente novamente',
         });
       }
     },
-    [signIn, addToast],
+    [addToast, history],
   );
 
   return (
@@ -71,27 +87,25 @@ const SignIn: React.FC = () => {
       <Content>
         <AnimationContainer>
           <Form ref={formRef} onSubmit={handleSubmit}>
-            <h1>Faça seu logon</h1>
+            <h1>Cadastro de Chave SMS</h1>
 
-            <Input name="email" icon={FiMail} placeholder="E-mail" />
+            <Input name="email" icon={FiMail} placeholder="E-mail do cliente" />
 
             <Input
-              name="password"
+              name="sms_key"
               icon={FiLock}
-              type="password"
-              placeholder="Senha"
+              type="sms_key"
+              placeholder="SMS dev Key"
             />
 
-            <Button icon={FaSpinner} type="submit">
-              Entrar
+            <Button loading={loading} icon={FaSpinner} type="submit">
+              Cadastrar Chave
             </Button>
-
-            <Link to="/forgot-password">Esqueci minha senha</Link>
           </Form>
 
-          <Link to="/signup">
-            <FiLogIn />
-            Criar conta
+          <Link to="/dashboard">
+            <FiArrowLeft />
+            Voltar ao dashboard
           </Link>
         </AnimationContainer>
       </Content>
@@ -100,4 +114,4 @@ const SignIn: React.FC = () => {
   );
 };
 
-export default SignIn;
+export default _UpdateUser;

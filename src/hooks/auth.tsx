@@ -7,11 +7,13 @@ interface User {
   avatar_url: string;
   email: string;
   sms_key: string;
+  admin?: boolean;
 }
 
 interface AuthState {
   token: string;
   user: User;
+  admin?: boolean;
 }
 
 interface SignInCredentials {
@@ -32,11 +34,18 @@ export const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>(() => {
     const token = localStorage.getItem('@smartsim:token');
     const user = localStorage.getItem('@smartsim:user');
+    const admin = localStorage.getItem('@smartsim:admin');
 
     if (token && user) {
       SSApi.defaults.headers.authorization = `Bearer ${token}`;
 
       return { token, user: JSON.parse(user) };
+    }
+
+    if (token && user && admin) {
+      SSApi.defaults.headers.authorization = `Bearer ${token}`;
+
+      return { token, user: JSON.parse(user), admin: true };
     }
 
     return {} as AuthState;
@@ -48,12 +57,18 @@ export const AuthProvider: React.FC = ({ children }) => {
       password,
     });
 
-    const { token, user } = response.data;
+    const { token, user, admin } = response.data;
 
     localStorage.setItem('@smartsim:token', token);
     localStorage.setItem('@smartsim:user', JSON.stringify(user));
 
     SSApi.defaults.headers.authorization = `Bearer ${token}`;
+
+    if (admin) {
+      localStorage.setItem('@smartsim:admin', admin);
+      setData({ token, user, admin });
+      return;
+    }
 
     setData({ token, user });
   }, []);
